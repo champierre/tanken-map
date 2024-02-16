@@ -89,9 +89,11 @@
         const urlObj = new URL(url);
         const id = urlObj.searchParams.get("id");
 
-        let info = '<div style="font-size:18px;font-weight:bold;margin-bottom:10px;">' + data['タイトル'] + '</div>' +
+        let info = '<div style="width:640px;height:480px;">' +
+        '<div style="font-size:18px;font-weight:bold;margin-bottom:10px;">' + data['タイトル'] + '</div>' +
         `<div><iframe src="https://drive.google.com/file/d/${id}/preview" width="640" height="480" allow="autoplay"></iframe></div>` +
-        '<div style="font-size:18px;margin-bottom:10px;">' + data['メモ'] + '</div>';
+        '<div style="font-size:18px;margin-bottom:10px;">' + data['メモ'] + '</div>' +
+        '</div>';
 
         infoWindow[i] = new google.maps.InfoWindow({
           content: info
