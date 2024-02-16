@@ -113,7 +113,7 @@
           sidebar_html += `<b>${i + 1}</b> <a href="javascript:openWindow(${i})">${name}<\/a><br />`;
         }
 
-        document.getElementById("sidebar").innerHTML = sidebar_html;
+        document.getElementById("sidebar").innerHTML = '<div><a href="map.html">地図</a></div>' + sidebar_html;
       }
 
       function markerEvent(i) {
