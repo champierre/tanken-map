@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>投稿 | 探検マップ</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <meta content='width=device-width,user-scalable=no' name='viewport'>
+  </head>
+  <body>
+    <h1>投稿</h1>
+    <div>
+      <div>
+        <label for="lat">緯度</label>
+        <input type="text" id="lat" name="lat" readonly />
+      </div>
+      <div>
+        <label for="lng">経度</label>
+        <input type="text" id="lng" name="lng" readonly />
+      </div>
+      <div>
+        <input type="button" onclick="post()" value="投稿" />
+      </div>
+    </div>
+    <script>
+      function post() {
+        let lat = document.getElementById('lat').value;
+        let lng = document.getElementById('lng').value;
+        let url = `https://docs.google.com/forms/d/e/1FAIpQLSffi40njweK59QnrBzUtA77CyvUQtTXuETHm1h0wlsLqIt5Jw/viewform?usp=pp_url&entry.1754611640=${lat}&entry.661516548=${lng}`;
+        window.open(url, '_blank');
+      }
+
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(showPosition, showError);
+        } else {
+          console.log("Geolocation is not supported by this browser.");
+        }
+      }
+
+      function showPosition(position) {
+        document.getElementById('lat').value = position.coords.latitude;
+        document.getElementById('lng').value = position.coords.longitude;
+      }
+
+      function showError(error) {
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            console.log("User denied the request for Geolocation.");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            console.log("Location information is unavailable.");
+            break;
+          case error.TIMEOUT:
+            console.log("The request to get user location timed out.");
+            break;
+          case error.UNKNOWN_ERROR:
+            console.log("An unknown error occurred.");
+            break;
+        }
+      }
+
+      getLocation();
+      setInterval(getLocation, 5000);
+    </script>
+  </body>
+</html>
