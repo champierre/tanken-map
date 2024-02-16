@@ -88,12 +88,11 @@
         const url = data['写真'];
         const urlObj = new URL(url);
         const id = urlObj.searchParams.get("id");
+        const imageUrl = `https://drive.google.com/thumbnail?sz=w100&id=${id}`;
 
-        let info = '<div style="width:640px;height:480px;">' +
-        '<div style="font-size:18px;font-weight:bold;margin-bottom:10px;">' + data['タイトル'] + '</div>' +
-        `<div><iframe src="https://drive.google.com/file/d/${id}/preview" width="640" height="480" allow="autoplay"></iframe></div>` +
-        '<div style="font-size:18px;margin-bottom:10px;">' + data['メモ'] + '</div>' +
-        '</div>';
+        let info = '<div style="font-size:18px;font-weight:bold;margin-bottom:10px;">' + data['タイトル'] + '</div>' +
+        `<div><img src="${imageUrl}"></div>` +
+        '<div style="font-size:18px;margin-bottom:10px;">' + data['メモ'] + '</div>';
 
         infoWindow[i] = new google.maps.InfoWindow({
           content: info
@@ -113,7 +112,7 @@
           sidebar_html += `<b>${i + 1}</b> <a href="javascript:openWindow(${i})">${name}<\/a><br />`;
         }
 
-        document.getElementById("sidebar").innerHTML = '<div><a href="map.html">地図</a></div>' + sidebar_html;
+        document.getElementById("sidebar").innerHTML = '<div><a href="post.html">投稿</a></div>' + sidebar_html;
       }
 
       function markerEvent(i) {
