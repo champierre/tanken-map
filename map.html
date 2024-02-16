@@ -1,133 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>地図 | 探検マップ</title>
-    <style>
-      #map {
-        height: 100%;
-      }
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      #sidebar {
-        position: absolute;
-        top: 10%;
-        left: 72%;
-        width: 25%;
-        height: 40%;
-        border: 1px solid #666;
-        padding: 6px;
-        background-color: white;
-        font-family: Meriyo UI;
-        font-size: 14px;
-      }
-    </style>
-    <meta content='width=device-width,user-scalable=no' name='viewport'>
-  </head>
-  <body>
-    <div id="map"></div>
-    <td><div id="sidebar"></div></td>
-    <script src="constants.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?language=ja&region=JP&key=AIzaSyDuGsDZbA_qhW_994yBcxGTwh7QssOqGEw&callback=initMap" async defer></script>
-    <script>
-      var map;
-      var marker = [];
-      var infoWindow = [];
-      var windowOpened;
 
-      function parseData(data) {
-        var keys = data.values[0];
-        var markerData = [];
-        data.values.forEach(function(value, i) {
-          if (i > 0) {
-            var hash = {};
-            value.forEach(function(d, j) {
-              hash[keys[j]] = d;
-            });
-            markerData.push(hash);
-          }
-        });
-        return markerData;
-      }
+<head>
+  <meta charset="utf-8">
+  <title>地図 | 探検マップ</title>
+  <style>
+    #map {
+      height: 100%;
+    }
 
-      function initMap() {
-        var target = document.getElementById('map');
-        var centerp = {lat: 35.6679191, lng: 139.4606805};
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
 
-        map = new google.maps.Map(target, {
-          center: centerp,
-          zoom: 7,
-        });
+    #sidebar {
+      position: absolute;
+      top: 10%;
+      left: 72%;
+      width: 25%;
+      height: 40%;
+      border: 1px solid #666;
+      padding: 6px;
+      background-color: white;
+      font-family: Meriyo UI;
+      font-size: 14px;
+    }
+  </style>
+  <meta content='width=device-width,user-scalable=no' name='viewport'>
+</head>
 
-        var request = new XMLHttpRequest();
-        request.open('GET', `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/フォームの回答 1?key=${API_KEY}`, true);
-        request.responseType = 'json';
+<body>
+  <div id="map"></div>
+  <td>
+    <div id="sidebar"></div>
+  </td>
+  <script src="constants.js"></script>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?language=ja&region=JP&key=AIzaSyDuGsDZbA_qhW_994yBcxGTwh7QssOqGEw&callback=initMap"
+    async defer></script>
+  <script>
+    var map;
+    var marker = [];
+    var infoWindow = [];
+    var windowOpened;
 
-        request.onload = function () {
-          var data = this.response;
-          var markerData = parseData(data);
-          setData(markerData);
-        };
+    function parseData(data) {
+      var keys = data.values[0];
+      var markerData = [];
+      data.values.forEach(function (value, i) {
+        if (i > 0) {
+          var hash = {};
+          value.forEach(function (d, j) {
+            hash[keys[j]] = d;
+          });
+          markerData.push(hash);
+        }
+      });
+      return markerData;
+    }
 
-        request.send();
-      }
+    function initMap() {
+      var target = document.getElementById('map');
+      var centerp = { lat: DEFAULT_LAT, lng: DEFAULT_LNG };
 
-      function addMarker(i, data) {
-        let markerLatLng = new google.maps.LatLng({
-          lat: Number(data['緯度']),
-          lng: Number(data['経度'])
-        });
-        marker[i] = new google.maps.Marker({
-          position: markerLatLng,
-          map: map
-        });
+      map = new google.maps.Map(target, {
+        center: centerp,
+        zoom: DEFAULT_ZOOM
+      });
 
-        const url = data['写真'];
-        const urlObj = new URL(url);
-        const id = urlObj.searchParams.get("id");
-        const imageUrl = `https://drive.google.com/thumbnail?sz=w100&id=${id}`;
+      var request = new XMLHttpRequest();
+      request.open('GET', `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/フォームの回答 1?key=${API_KEY}`, true);
+      request.responseType = 'json';
 
-        let info = '<div style="font-size:18px;font-weight:bold;margin-bottom:10px;">' + data['タイトル'] + '</div>' +
+      request.onload = function () {
+        var data = this.response;
+        var markerData = parseData(data);
+        setData(markerData);
+      };
+
+      request.send();
+    }
+
+    function addMarker(i, data) {
+      let markerLatLng = new google.maps.LatLng({
+        lat: Number(data['緯度']),
+        lng: Number(data['経度'])
+      });
+      marker[i] = new google.maps.Marker({
+        position: markerLatLng,
+        map: map
+      });
+
+      const url = data['写真'];
+      const urlObj = new URL(url);
+      const id = urlObj.searchParams.get("id");
+      const imageUrl = `https://drive.google.com/thumbnail?sz=w100&id=${id}`;
+
+      let info = '<div style="font-size:18px;font-weight:bold;margin-bottom:10px;">' + data['タイトル'] + '</div>' +
         `<div><img src="${imageUrl}"></div>` +
         '<div style="font-size:18px;margin-bottom:10px;">' + data['メモ'] + '</div>';
 
-        infoWindow[i] = new google.maps.InfoWindow({
-          content: info
-        });
+      infoWindow[i] = new google.maps.InfoWindow({
+        content: info
+      });
 
-        markerEvent(i);
+      markerEvent(i);
+    }
+
+    function setData(markerData) {
+      var sidebar_html = "";
+      for (var i = 0; i < markerData.length; i++) {
+        var latitude = markerData[i]['緯度'];
+        if (!latitude) { continue; }
+        addMarker(i, markerData[i]);
+        var name = markerData[i]['タイトル'];
+
+        sidebar_html += `<b>${i + 1}</b> <a href="javascript:openWindow(${i})">${name}<\/a><br />`;
       }
 
-      function setData(markerData){
-        var sidebar_html = "";
-        for (var i = 0; i < markerData.length; i++) {
-          var latitude = markerData[i]['緯度'];
-          if (!latitude) { continue; }
-          addMarker(i, markerData[i]);
-          var name = markerData[i]['タイトル'];
+      document.getElementById("sidebar").innerHTML = '<div><a href="post.html">投稿</a></div>' + sidebar_html;
+    }
 
-          sidebar_html += `<b>${i + 1}</b> <a href="javascript:openWindow(${i})">${name}<\/a><br />`;
-        }
+    function markerEvent(i) {
+      marker[i].addListener('click', function () {
+        openWindow(i);
+      });
+    }
 
-        document.getElementById("sidebar").innerHTML = '<div><a href="post.html">投稿</a></div>' + sidebar_html;
+    function openWindow(i) {
+      if (windowOpened) {
+        windowOpened.close();
       }
+      infoWindow[i].open(map, marker[i]);
+      windowOpened = infoWindow[i];
+    }
+  </script>
+</body>
 
-      function markerEvent(i) {
-        marker[i].addListener('click', function() {
-          openWindow(i);
-        });
-      }
-
-      function openWindow(i) {
-        if(windowOpened){
-          windowOpened.close();
-        }
-        infoWindow[i].open(map, marker[i]);
-        windowOpened = infoWindow[i];
-      }
-    </script>
-  </body>
 </html>
